@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     height: 760,
     borderRadius: 380,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.035)",
+    borderColor: "rgba(255, 255, 255, 0.08)",
   },
 
   circleMedium: {
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     height: 520,
     borderRadius: 260,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.035)",
+    borderColor: "rgba(255, 255, 255, 0.08)",
   },
 
   circleSmall: {
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: 150,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.035)",
+    borderColor: "rgba(255, 255, 255, 0.08)",
   },
 
 });
