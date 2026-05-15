@@ -8,6 +8,7 @@ import {
   Image,
   FlatList,
   Dimensions,
+  ScrollView,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,7 +22,7 @@ const slides = [
     title: "Delivering global solutions locally",
 
     description:
-      "We are a complete solution for tunnel accessories, spare parts for rock drilling machines, safety accessories for tunnel use, fitting & installation of bailey bridge, servicing & maintenance of air compressor, rock drilling machines, Shotcrete machine, Generator & many more. We offer a variety of product types and materials along with Genuine brands in order to meet our customer requirements.",
+      "We are a complete solution for tunnel accessories, spare parts for rock drilling machines, safety accessories for tunnel use, fitting & installation of bailey bridge, servicing & maintenance of air compressor, rock drilling machines and more.",
 
     image: require("../assets/images/img1.jpeg"),
   },
@@ -32,7 +33,7 @@ const slides = [
     title: "15 YEARS OF SERVICE",
 
     description:
-      "We are privately owned company specializing in tunnel equipments, its accessories, with maintenance and repair works. We are specialized supplier of medium and small machineries and equipments to Hydro Power, road construction and tunnel construction",
+      "We specialize in tunnel equipment, accessories, maintenance and repair works for hydro power, road and tunnel construction.",
 
     image: require("../assets/images/img2.png"),
   },
@@ -43,7 +44,7 @@ const slides = [
     title: "INDEPENDENTLY OWNED",
 
     description:
-      "Because Global Industrial is independent, we’re able to do business the way our customers need it. Our team is able to make quick decisions and operate with honor and integrity. We’re there when you need us 24/7.",
+      "We operate with integrity, quick decision making and strong customer support whenever you need us.",
 
     image: require("../assets/images/img3.png"),
   },
@@ -61,7 +62,7 @@ export default function Onboarding() {
 
     if (nextSlide < slides.length) {
 
-      flatListRef.current.scrollToOffset({
+      flatListRef.current?.scrollToOffset({
         offset: nextSlide * width,
         animated: true,
       });
@@ -74,7 +75,7 @@ export default function Onboarding() {
 
     const lastSlide = slides.length - 1;
 
-    flatListRef.current.scrollToOffset({
+    flatListRef.current?.scrollToOffset({
       offset: lastSlide * width,
       animated: true,
     });
@@ -88,12 +89,13 @@ export default function Onboarding() {
 
       <View style={styles.slide}>
 
-        {/* TOP HALF */}
+        {/* TOP SECTION */}
 
         <View style={styles.topSection}>
+
           <View style={styles.gridContainer}>
 
-            {Array.from({ length: 60 }).map((_, index) => (
+            {Array.from({ length: 40 }).map((_, index) => (
 
               <View
                 key={`vertical-${index}`}
@@ -105,7 +107,7 @@ export default function Onboarding() {
 
             ))}
 
-            {Array.from({ length: 12 }).map((_, index) => (
+            {Array.from({ length: 20 }).map((_, index) => (
 
               <View
                 key={`horizontal-${index}`}
@@ -131,9 +133,13 @@ export default function Onboarding() {
 
         </View>
 
-        {/* BOTTOM HALF */}
+        {/* BOTTOM SECTION */}
 
-        <View style={styles.bottomSection}>
+        <ScrollView
+          style={styles.bottomSection}
+          contentContainerStyle={{ paddingBottom: 220 }}
+          showsVerticalScrollIndicator={false}
+        >
 
           {/* PAGINATION */}
 
@@ -166,38 +172,59 @@ export default function Onboarding() {
           <Text style={styles.description}>
             {item.description}
           </Text>
+<View style={styles.footer}>
 
-          {/* BUTTONS */}
+  <TouchableOpacity onPress={handleSkip}>
 
-          <View style={styles.footer}>
+    <Text style={styles.skipText}>
+      Skip
+    </Text>
 
-            <TouchableOpacity onPress={handleSkip}>
+  </TouchableOpacity>
 
-              <Text style={styles.skipText}>
-                Skip
-              </Text>
+  <TouchableOpacity
+    style={styles.nextButton}
+    onPress={handleNext}
+  >
 
-            </TouchableOpacity>
+    <Text style={styles.nextText}>
+      Next →
+    </Text>
 
-            <TouchableOpacity
-              style={styles.nextButton}
-              onPress={handleNext}
-            >
+  </TouchableOpacity>
 
-              <Text style={styles.nextText}>
-                Next →
-              </Text>
+</View>
+        </ScrollView>
 
-            </TouchableOpacity>
+        {/* FOOTER */}
 
-          </View>
+        {/* <View style={styles.footer}>
 
-        </View>
+          <TouchableOpacity onPress={handleSkip}>
+
+            <Text style={styles.skipText}>
+              Skip
+            </Text>
+
+          </TouchableOpacity>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.nextButton}
+            onPress={handleNext}
+          >
+
+            <Text style={styles.nextText}>
+              Next →
+            </Text>
+
+          </TouchableOpacity>
+
+        </View> */}
 
       </View>
 
     );
-
   };
 
   return (
@@ -212,12 +239,6 @@ export default function Onboarding() {
         pagingEnabled
         scrollEnabled={false}
         showsHorizontalScrollIndicator={false}
-
-        getItemLayout={(data, index) => ({
-          length: width,
-          offset: width * index,
-          index,
-        })}
       />
 
     </SafeAreaView>
@@ -226,31 +247,6 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  gridContainer: {
-    zIndex: 1,
-    position: "absolute",
-
-    width: "100%",
-    height: "100%",
-  },
-
-  verticalLine: {
-    position: "absolute",
-
-    width: 1,
-    height: "100%",
-
-    backgroundColor: "rgba(255,255,255,0.05)",
-  },
-
-  horizontalLine: {
-    position: "absolute",
-
-    width: "100%",
-    height: 1,
-
-    backgroundColor: "rgba(255,255,255,0.05)",
-  },
 
   container: {
     flex: 1,
@@ -262,72 +258,71 @@ const styles = StyleSheet.create({
     height,
   },
 
-  /* TOP SECTION */
-
   topSection: {
-    height: "50%",
-
+    height: height * 0.45,
     backgroundColor: "#1D2F97",
-
     justifyContent: "center",
     alignItems: "center",
-
     overflow: "hidden",
   },
 
+  gridContainer: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
+
+  verticalLine: {
+    position: "absolute",
+    width: 1,
+    height: "100%",
+    backgroundColor: "rgba(255,255,255,0.05)",
+  },
+
+  horizontalLine: {
+    position: "absolute",
+    width: "100%",
+    height: 1,
+    backgroundColor: "rgba(255,255,255,0.05)",
+  },
+
   imageCard: {
-    zIndex: 2,
     width: 170,
     height: 170,
-
     borderRadius: 35,
-
     backgroundColor: "rgba(255,255,255,0.08)",
-
     justifyContent: "center",
     alignItems: "center",
-
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
   },
 
   image: {
-    width: 200,
-    height: 200,
+    width: 140,
+    height: 140,
   },
 
-  /* BOTTOM SECTION */
-
   bottomSection: {
-    height: "50%",
-
+    flex: 1,
     backgroundColor: "#F7F7F7",
-
     borderTopLeftRadius: 38,
     borderTopRightRadius: 38,
-
+    marginTop: -25,
     paddingHorizontal: 34,
     paddingTop: 24,
   },
 
-  /* PAGINATION */
-
   pagination: {
     flexDirection: "row",
-
     alignSelf: "center",
-
     marginBottom: 34,
   },
 
   dot: {
     width: 8,
     height: 8,
-
     borderRadius: 4,
-
     backgroundColor: "#D7D7D7",
-
     marginHorizontal: 4,
   },
 
@@ -336,52 +331,36 @@ const styles = StyleSheet.create({
     backgroundColor: "#29B6F6",
   },
 
-  /* TEXT */
-
   smallTitle: {
     color: "#29B6F6",
-
     fontSize: 13,
-
     letterSpacing: 3,
-
     marginBottom: 18,
-
     fontFamily: "Times New Roman",
   },
 
   mainTitle: {
     color: "#1D2F97",
     fontSize: 30,
-    lineHeight: 38,
+    lineHeight: 40,
     marginBottom: 22,
     fontFamily: "Times New Roman",
-    fontWeight: 700,
+    fontWeight: "700",
   },
 
   description: {
     color: "#505B74",
-
     fontSize: 17,
-
     lineHeight: 32,
   },
 
-  /* FOOTER */
+ footer: {
 
-  footer: {
-    position: "absolute",
-
-    bottom: 85,
-    left: 34,
-    right: 34,
-
-    flexDirection: "row",
-
-    justifyContent: "space-between",
-
-    alignItems: "center",
-  },
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginTop: 40,
+},
 
   skipText: {
     color: "#9E9E9E",
@@ -390,49 +369,16 @@ const styles = StyleSheet.create({
 
   nextButton: {
     backgroundColor: "#29B6F6",
-
     paddingHorizontal: 36,
     paddingVertical: 18,
-
     borderRadius: 20,
-
     elevation: 6,
   },
 
   nextText: {
     color: "white",
-
     fontSize: 17,
-
     fontWeight: "600",
-  },
-
-  /* BACKGROUND CIRCLES */
-
-  circleLarge: {
-    position: "absolute",
-
-    width: 650,
-    height: 650,
-
-    borderRadius: 0,
-
-    borderWidth: 1,
-
-    borderColor: "rgba(255,255,255,0.04)",
-  },
-
-  circleMedium: {
-    position: "absolute",
-
-    width: 380,
-    height: 380,
-
-    borderRadius: 0,
-
-    borderWidth: 1,
-
-    borderColor: "rgba(255,255,255,0.04)",
   },
 
 });
