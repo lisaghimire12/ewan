@@ -1,14 +1,5 @@
-import { useState } from 'react'
-import Register from './pages/Register'
+import SplashScreen from "./src/screens/SplashScreen";
 
-function App() {
-  return (
-    <>
-      <div>
-        <Register />
-      </div>
-    </>
-  );
+export default function App() {
+  return <SplashScreen />;
 }
-
-export default App;
