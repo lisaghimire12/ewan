@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-
+import { useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -51,36 +51,29 @@ const slides = [
 ];
 
 export default function Onboarding() {
+  const router = useRouter();
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const flatListRef = useRef(null);
 
   const handleNext = () => {
+  const nextSlide = currentSlide + 1;
 
-    const nextSlide = currentSlide + 1;
+  if (nextSlide < slides.length) {
+    setCurrentSlide(nextSlide);
 
-    if (nextSlide < slides.length) {
-
-      flatListRef.current?.scrollToOffset({
-        offset: nextSlide * width,
-        animated: true,
-      });
-
-      setCurrentSlide(nextSlide);
-    }
-  };
-
-  const handleSkip = () => {
-
-    const lastSlide = slides.length - 1;
-
-    flatListRef.current?.scrollToOffset({
-      offset: lastSlide * width,
+    flatListRef.current.scrollToOffset({
+      offset: nextSlide * width,
       animated: true,
     });
+  } else {
+    router.replace("/login");
+  }
+};
 
-    setCurrentSlide(lastSlide);
+  const handleSkip = () => {
+    router.replace("/login");
   };
 
   const renderItem = ({ item }) => {
@@ -172,28 +165,28 @@ export default function Onboarding() {
           <Text style={styles.description}>
             {item.description}
           </Text>
-<View style={styles.footer}>
+          <View style={styles.footer}>
 
-  <TouchableOpacity onPress={handleSkip}>
+            <TouchableOpacity onPress={handleSkip}>
 
-    <Text style={styles.skipText}>
-      Skip
-    </Text>
+              <Text style={styles.skipText}>
+                Skip
+              </Text>
 
-  </TouchableOpacity>
+            </TouchableOpacity>
 
-  <TouchableOpacity
-    style={styles.nextButton}
-    onPress={handleNext}
-  >
+            <TouchableOpacity
+              style={styles.nextButton}
+              onPress={handleNext}
+            >
 
-    <Text style={styles.nextText}>
-      Next →
-    </Text>
+              <Text style={styles.nextText}>
+                {currentSlide === slides.length - 1 ? "Start →" : "Next →"}
+              </Text>
 
-  </TouchableOpacity>
+            </TouchableOpacity>
 
-</View>
+          </View>
         </ScrollView>
 
         {/* FOOTER */}
@@ -298,8 +291,9 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: 140,
-    height: 140,
+    width: 170,
+    height: 170,
+    borderRadius: 10,
   },
 
   bottomSection: {
@@ -354,13 +348,13 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
 
- footer: {
+  footer: {
 
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginTop: 40,
-},
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 40,
+  },
 
   skipText: {
     color: "#9E9E9E",
