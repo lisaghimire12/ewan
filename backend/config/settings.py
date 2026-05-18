@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from dotenv import load_dotenv
 import os
 
+
+
 load_dotenv()
 from pathlib import Path
 from datetime import timedelta
@@ -43,6 +45,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.101.15"]
+#ALLOWED_HOSTS = ["*"]
 
 
 # Application definition

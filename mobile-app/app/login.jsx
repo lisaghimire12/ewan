@@ -28,7 +28,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-  Alert.alert("Button clicked", "handleLogin is running");
   if (!identifier.trim() || !password.trim()) {
     Alert.alert("Missing fields", "Please enter email/phone and password.");
     return;
