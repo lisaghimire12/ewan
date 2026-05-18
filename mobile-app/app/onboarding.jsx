@@ -217,7 +217,7 @@ export default function Onboarding() {
 
       </View>
 
-    );
+    );``
   };
 
   return (

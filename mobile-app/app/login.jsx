@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -27,51 +28,81 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!identifier.trim() || !password.trim()) {
-      Alert.alert("Missing details", "Please enter email/phone and password.");
+  Alert.alert("Button clicked", "handleLogin is running");
+  if (!identifier.trim() || !password.trim()) {
+    Alert.alert("Missing fields", "Please enter email/phone and password.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    console.log("1. Login started");
+    console.log("API URL:", `${API_BASE_URL}/api/auth/login/`);
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/login/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        identifier: identifier.trim(),
+        password: password,
+      }),
+    });
+
+    console.log("2. Response received");
+    console.log("STATUS:", response.status);
+    console.log("OK:", response.ok);
+
+    const data = await response.json();
+
+    console.log("3. DATA:", data);
+
+    if (response.ok) {
+      console.log("4. Login success block entered");
+
+      setPassword("");
+
+      console.log("5. Redirecting to OTP now");
+
+      router.push("/otp");
+
       return;
     }
 
-    try {
-      setLoading(true);
+    console.log("6. Login failed block entered");
 
-      const response = await fetch(`${API_BASE_URL}/api/auth/login/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: identifier.trim(),
-          password: password,
-        }),
-      });
+    Alert.alert(
+      "Login failed",
+      data.message || "Invalid email/phone or password."
+    );
+  } catch (error) {
+    console.log("7. CATCH ERROR:", error);
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        Alert.alert(
-          "Login failed",
-          data.message || "Invalid email/phone or password."
-        );
-        return;
-      }
-
-      await SecureStore.setItemAsync("accessToken", data.tokens.access);
-      await SecureStore.setItemAsync("refreshToken", data.tokens.refresh);
-
-      router.push("/otp");
-    } catch (error) {
-      Alert.alert(
-        "Connection error",
-        "Could not connect to the server. Please check your backend and API URL."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
+    Alert.alert(
+      "Connection error",
+      "Could not connect to the server."
+    );
+  } finally {
+    console.log("8. Finally block");
+    setLoading(false);
+  }
+};
   const goToOtp = () => {
     router.push("/otp");
+  };
+
+  const goToRegister = () => {
+    router.push("/register");
+  };
+
+  const goToForgotPassword = () => {
+    Alert.alert("Coming soon", "Forgot password will be connected next.");
+  };
+
+  const goToGoogleLogin = () => {
+    Alert.alert("Coming soon", "Google login will be connected later.");
   };
 
   return (
@@ -87,15 +118,13 @@ export default function Login() {
         >
           <View style={styles.header}>
             <View style={styles.brandRow}>
-              <View style={styles.logoBox}>
-                <Image
-                  source={require("../assets/images/logo.png")}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
-              </View>
+              <Image
+                source={require("../assets/images/logo.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
 
-              <View>
+              <View style={styles.brandTextBox}>
                 <Text style={styles.brandTitle}>Ewan Engineering</Text>
                 <Text style={styles.brandSubtitle}>
                   And Construction Pvt. Ltd.
@@ -104,15 +133,13 @@ export default function Login() {
             </View>
 
             <Text style={styles.welcome}>Welcome back!!</Text>
-            <Text style={styles.signInText}>Sign in to your account</Text>
+            <Text style={styles.signInSubText}>Sign in to your account</Text>
           </View>
 
           <View style={styles.formSection}>
             <Text style={styles.label}>EMAIL / PHONE</Text>
 
             <View style={styles.inputBox}>
-              <Text style={styles.inputIcon}></Text>
-
               <TextInput
                 style={styles.input}
                 value={identifier}
@@ -120,6 +147,7 @@ export default function Login() {
                 placeholder="Enter email or phone"
                 placeholderTextColor="#9AA3B8"
                 autoCapitalize="none"
+                autoCorrect={false}
                 keyboardType="email-address"
               />
             </View>
@@ -127,8 +155,6 @@ export default function Login() {
             <Text style={styles.label}>PASSWORD</Text>
 
             <View style={[styles.inputBox, styles.activeInput]}>
-              <Text style={styles.inputIcon}></Text>
-
               <TextInput
                 style={styles.input}
                 value={password}
@@ -137,16 +163,23 @@ export default function Login() {
                 placeholderTextColor="#9AA3B8"
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
+                autoCorrect={false}
               />
 
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                hitSlop={10}
+              >
                 <Text style={styles.eyeText}>
-                  {showPassword ? "🫣" : "👀"}
+                  {showPassword ? "Hide" : "Show"}
                 </Text>
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.forgotButton}>
+            <TouchableOpacity
+              style={styles.forgotButton}
+              onPress={goToForgotPassword}
+            >
               <Text style={styles.forgotText}>Forgot password?</Text>
             </TouchableOpacity>
 
@@ -154,6 +187,7 @@ export default function Login() {
               style={[styles.loginButton, loading && styles.disabledButton]}
               onPress={handleLogin}
               disabled={loading}
+              activeOpacity={0.85}
             >
               {loading ? (
                 <ActivityIndicator color="#FFFFFF" />
@@ -169,16 +203,28 @@ export default function Login() {
             </View>
 
             <View style={styles.socialRow}>
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                onPress={goToGoogleLogin}
+                activeOpacity={0.8}
+              >
                 <Text style={styles.socialText}>🌐 Google</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.socialButton} onPress={goToOtp}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                onPress={goToOtp}
+                activeOpacity={0.8}
+              >
                 <Text style={styles.socialText}>📱 Phone OTP</Text>
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.registerButton}>
+            <TouchableOpacity
+              style={styles.registerButton}
+              onPress={goToRegister}
+              activeOpacity={0.8}
+            >
               <Text style={styles.registerText}>
                 Don't have an account?{" "}
                 <Text style={styles.registerLink}>Register →</Text>
@@ -199,6 +245,7 @@ const styles = StyleSheet.create({
 
   keyboardView: {
     flex: 1,
+    backgroundColor: "#FFFFFF",
   },
 
   scrollContent: {
@@ -209,35 +256,30 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "#1C2187",
     paddingHorizontal: 34,
-    paddingTop: 20,
-    paddingBottom: 60,
+    paddingTop: 44,
+    paddingBottom: 54,
   },
 
   brandRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 34,
+    marginBottom: 38,
   },
 
-//   logoBox: {
-//     width: 54,
-//     height: 54,
-//     borderRadius: 14,
-//     backgroundColor: "#2BC3F3",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     marginRight: 10,
-//   },
-
   logo: {
-    width: 110,
-    height: 110,
-    marginRight: 15,
+    width: 105,
+    height: 64,
+    marginRight: 16,
+    backgroundColor: "#FFFFFF",
+  },
+
+  brandTextBox: {
+    flex: 1,
   },
 
   brandTitle: {
     color: "#FFFFFF",
-    fontSize: 25,
+    fontSize: 24,
     fontFamily: "Times New Roman",
     fontWeight: "700",
   },
@@ -245,28 +287,28 @@ const styles = StyleSheet.create({
   brandSubtitle: {
     color: "#22C7F4",
     fontSize: 15,
-    marginTop: 2,
+    marginTop: 3,
   },
 
   welcome: {
     color: "#FFFFFF",
-    fontSize: 29,
+    fontSize: 32,
     fontFamily: "Times New Roman",
     fontWeight: "700",
   },
 
-  signInText: {
+  signInSubText: {
     color: "#C9CBEF",
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: 17,
+    marginTop: 12,
   },
 
   formSection: {
     flex: 1,
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 34,
-    paddingTop: 32,
-    paddingBottom: 40,
+    paddingTop: 34,
+    paddingBottom: 44,
   },
 
   label: {
@@ -294,11 +336,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F8FF",
   },
 
-  inputIcon: {
-    fontSize: 15,
-    marginRight: 12,
-  },
-
   input: {
     flex: 1,
     color: "#111827",
@@ -306,7 +343,10 @@ const styles = StyleSheet.create({
   },
 
   eyeText: {
-    fontSize: 15,
+    color: "#159CE8",
+    fontSize: 13,
+    fontWeight: "700",
+    marginLeft: 10,
   },
 
   forgotButton: {
