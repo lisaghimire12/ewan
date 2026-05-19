@@ -28,66 +28,74 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-  if (!identifier.trim() || !password.trim()) {
-    Alert.alert("Missing fields", "Please enter email/phone and password.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    console.log("1. Login started");
-    console.log("API URL:", `${API_BASE_URL}/api/auth/login/`);
-
-    const response = await fetch(`${API_BASE_URL}/api/auth/login/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        identifier: identifier.trim(),
-        password: password,
-      }),
-    });
-
-    console.log("2. Response received");
-    console.log("STATUS:", response.status);
-    console.log("OK:", response.ok);
-
-    const data = await response.json();
-
-    console.log("3. DATA:", data);
-
-    if (response.ok) {
-      console.log("4. Login success block entered");
-
-      setPassword("");
-
-      console.log("5. Redirecting to OTP now");
-
-      router.push("/otp");
-
+    if (!identifier.trim() || !password.trim()) {
+      Alert.alert("Missing fields", "Please enter email/phone and password.");
       return;
     }
 
-    console.log("6. Login failed block entered");
+    try {
+      setLoading(true);
 
-    Alert.alert(
-      "Login failed",
-      data.message || "Invalid email/phone or password."
-    );
-  } catch (error) {
-    console.log("7. CATCH ERROR:", error);
+      console.log("1. Login started");
+      console.log("API URL:", `${API_BASE_URL}/api/auth/login/`);
 
-    Alert.alert(
-      "Connection error",
-      "Could not connect to the server."
-    );
-  } finally {
-    console.log("8. Finally block");
-    setLoading(false);
-  }
-};
+      const response = await fetch(`${API_BASE_URL}/api/auth/login/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          identifier: identifier.trim(),
+          password: password,
+        }),
+      });
+
+      console.log("2. Response received");
+      console.log("STATUS:", response.status);
+      console.log("OK:", response.ok);
+
+      const data = await response.json();
+
+      console.log("3. DATA:", data);
+
+
+      if (response.ok) {
+
+        console.log("4. Login success block entered");
+
+        setPassword("");
+
+        console.log("5. Redirecting to OTP now");
+
+        router.push({
+          pathname: "/otp",
+          params: {
+            phone: identifier,
+            username: data.user.username,
+          },
+        });
+
+        return;
+      }
+
+      console.log("6. Login failed block entered");
+
+      Alert.alert(
+        "Login failed",
+        data.message || "Invalid email/phone or password."
+      );
+    } catch (error) {
+      console.log("7. CATCH ERROR:", error);
+
+      Alert.alert(
+        "Connection error",
+        "Could not connect to the server."
+      );
+    } finally {
+      console.log("8. Finally block");
+      setLoading(false);
+    }
+  };
   const goToOtp = () => {
     router.push("/otp");
   };
@@ -207,7 +215,7 @@ export default function Login() {
                 onPress={goToGoogleLogin}
                 activeOpacity={0.8}
               >
-                <Text style={styles.socialText}>🌐 Google</Text>
+                <Text style={styles.socialText}>🇬 Google</Text>
               </TouchableOpacity>
 
               <TouchableOpacity

@@ -14,7 +14,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OtpScreen() {
-  const { phone } = useLocalSearchParams();
+  const { phone, username } = useLocalSearchParams();
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(165);
@@ -115,9 +115,12 @@ export default function OtpScreen() {
       return;
     }
 
-    Alert.alert("OTP Entered", `You entered: ${enteredOtp}`);
-
-    // Later we will connect this to backend OTP verification
+    router.replace({
+      pathname: "/home",
+      params: {
+        username,
+      },
+    });
   };
 
   const handleResendOtp = () => {
@@ -318,27 +321,27 @@ const styles = StyleSheet.create({
     marginBottom: 34,
   },
 
-otpBox: {
-  width: 54,
-  height: 64,
-  borderRadius: 12,
-  fontSize: 28,
-  fontWeight: "800",
-  color: "#1D2088",
-  backgroundColor: "#F5F7FB",
+  otpBox: {
+    width: 54,
+    height: 64,
+    borderRadius: 12,
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#1D2088",
+    backgroundColor: "#F5F7FB",
 
-  padding: 0,
-  margin: 0,
+    padding: 0,
+    margin: 0,
 
-  textAlign: "center",
+    textAlign: "center",
 
-  paddingTop: Platform.OS === "ios" ? 0 : 0,
-  paddingBottom: Platform.OS === "ios" ? 2 : 0,
+    paddingTop: Platform.OS === "ios" ? 0 : 0,
+    paddingBottom: Platform.OS === "ios" ? 2 : 0,
 
-  includeFontPadding: false,
+    includeFontPadding: false,
 
-  outlineStyle: "none",
-},
+    outlineStyle: "none",
+  },
 
   otpBoxFilled: {
     borderWidth: 2,
