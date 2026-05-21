@@ -6,7 +6,7 @@ import {
     ScrollView,
     SafeAreaView,
 } from "react-native";
-
+import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 
 import { useEffect, useState } from "react";
@@ -130,28 +130,28 @@ export default function HomeScreen() {
 
                         <View style={styles.actionItem}>
                             <View style={styles.actionIcon}>
-                            <Text style={{ fontSize: 32 }}>📋</Text>
+                                <Text style={{ fontSize: 32 }}>📋</Text>
                             </View>
                             <Text style={styles.actionText}>Request Quote</Text>
                         </View>
 
                         <View style={styles.actionItem}>
                             <View style={styles.actionIcon}>
-                                <Text style={{ fontSize: 32}}>📦</Text>
+                                <Text style={{ fontSize: 32 }}>📦</Text>
                             </View>
                             <Text style={styles.actionText}>Order Material</Text>
                         </View>
 
                         <View style={styles.actionItem}>
                             <View style={styles.actionIcon}>
-                                <Text style={{ fontSize: 32}}>📍</Text>
+                                <Text style={{ fontSize: 32 }}>📍</Text>
                             </View>
                             <Text style={styles.actionText}>Track Project</Text>
                         </View>
 
                         <View style={styles.actionItem}>
                             <View style={styles.actionIcon}>
-                                <Text style={{ fontSize: 32}}>🎧</Text>
+                                <Text style={{ fontSize: 32 }}>🎧</Text>
                             </View>
                             <Text style={styles.actionText}>Support</Text>
                         </View>
@@ -252,34 +252,82 @@ export default function HomeScreen() {
 
             <View style={styles.bottomNav}>
 
-                <TouchableOpacity style={styles.navItem}>
-                    <Text style={styles.activeNav}>🏠</Text>
-                    <Text style={styles.activeNavText}>Home</Text>
-                </TouchableOpacity>
+                {/* HOME */}
 
                 <TouchableOpacity style={styles.navItem}>
-                    <Text>🔧</Text>
-                    <Text style={styles.navText}>Services</Text>
+
+                    <Text style={[styles.activeNav, { fontSize: 32 }]}>
+                        🏠
+                    </Text>
+
+                    <Text style={styles.activeNavText}>
+                        Home
+                    </Text>
+
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.navItem}>
-                    <Text>📁</Text>
-                    <Text style={styles.navText}>Projects</Text>
+                {/* SERVICES */}
+
+                <TouchableOpacity
+                    style={styles.navItem}
+                    onPress={() => router.push("/services")}
+                >
+
+                    <Text style={{ fontSize: 32 }}>
+                        🔧
+                    </Text>
+
+                    <Text style={styles.navText}>
+                        Services
+                    </Text>
+
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.navItem}>
-                    <Text>📦</Text>
-                    <Text style={styles.navText}>Orders</Text>
-                </TouchableOpacity>
+                {/* PROJECTS */}
 
                 <TouchableOpacity style={styles.navItem}>
-                    <Text>👤</Text>
-                    <Text style={styles.navText}>Profile</Text>
+
+                    <Text style={{ fontSize: 32 }}>
+                        📁
+                    </Text>
+
+                    <Text style={styles.navText}>
+                        Projects
+                    </Text>
+
+                </TouchableOpacity>
+
+                {/* ORDERS */}
+
+                <TouchableOpacity style={styles.navItem}>
+
+                    <Text style={{ fontSize: 32 }}>
+                        📦
+                    </Text>
+
+                    <Text style={styles.navText}>
+                        Orders
+                    </Text>
+
+                </TouchableOpacity>
+
+                {/* PROFILE */}
+
+                <TouchableOpacity style={styles.navItem}>
+
+                    <Text style={{ fontSize: 32 }}>
+                        👤
+                    </Text>
+
+                    <Text style={styles.navText}>
+                        Profile
+                    </Text>
+
                 </TouchableOpacity>
 
             </View>
 
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }
 
