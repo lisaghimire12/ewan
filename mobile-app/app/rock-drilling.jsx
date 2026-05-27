@@ -10,7 +10,6 @@ import {
 } from "react-native";
 
 import { router } from "expo-router";
-
 import { useEffect, useState } from "react";
 
 export default function RockDrillingScreen() {
@@ -23,10 +22,11 @@ export default function RockDrillingScreen() {
   }, []);
 
   const fetchMachines = async () => {
+
     try {
 
       const response = await fetch(
-        "http://192.168.101.7:8000/api/machines/"
+        "http://192.168.1.68:8000/api/machines/rock-drilling/"
       );
 
       const data = await response.json();
@@ -36,10 +36,14 @@ export default function RockDrillingScreen() {
       setMachines(data);
 
     } catch (error) {
+
       console.log("ERROR:", error);
-      alert(error);
+      alert("Failed to load machines");
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
@@ -54,7 +58,7 @@ export default function RockDrillingScreen() {
   return (
     <SafeAreaView style={styles.container}>
 
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* HEADER */}
 
@@ -99,10 +103,9 @@ export default function RockDrillingScreen() {
             >
 
               <Image
-                source={{
-                  uri: item.image
-                }}
+                source={{ uri: item.image }}
                 style={styles.image}
+                resizeMode="cover"
               />
 
               <Text style={styles.machineName}>
@@ -136,12 +139,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#F5F7FB",
   },
 
   header: {
     backgroundColor: "#1F2790",
     padding: 22,
     paddingTop: 40,
+    paddingBottom: 30,
   },
 
   back: {
@@ -170,7 +175,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 22,
     padding: 16,
-    marginBottom: 20,
+    marginBottom: 22,
 
     shadowColor: "#000",
     shadowOpacity: 0.05,

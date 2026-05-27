@@ -1,9 +1,12 @@
 from django.http import JsonResponse
 from .models import Machine
 
-def machine_list(request):
 
-    machines = Machine.objects.all()
+def machine_list(request, category_name):
+
+    machines = Machine.objects.filter(
+        category__name=category_name
+    )
 
     data = []
 
@@ -12,8 +15,10 @@ def machine_list(request):
         data.append({
             "id": machine.id,
             "name": machine.name,
-            "image": request.build_absolute_uri(machine.image.url)
+
+            "image": f"http://192.168.1.68:8000{machine.image.url}"
             if machine.image else "",
+
         })
 
     return JsonResponse(data, safe=False)

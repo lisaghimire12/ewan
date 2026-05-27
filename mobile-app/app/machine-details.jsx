@@ -4,7 +4,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  SafeAreaView,
+  ScrollView,
 } from "react-native";
 
 import { useLocalSearchParams, router } from "expo-router";
@@ -14,21 +14,28 @@ export default function MachineDetails() {
   const { name, image } = useLocalSearchParams();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
+
+      {/* BACK BUTTON */}
 
       <TouchableOpacity
-        style={styles.backButton}
         onPress={() => router.back()}
+        style={styles.backButton}
       >
-        <Text style={styles.backText}>
+        <Text style={styles.back}>
           ←
         </Text>
       </TouchableOpacity>
 
+      {/* MACHINE IMAGE */}
+
       <Image
         source={{ uri: image }}
         style={styles.image}
+        resizeMode="cover"
       />
+
+      {/* MACHINE INFO */}
 
       <View style={styles.content}>
 
@@ -36,14 +43,9 @@ export default function MachineDetails() {
           {name}
         </Text>
 
-        <Text style={styles.description}>
-          Heavy-duty industrial drilling machine designed
-          for tunnel engineering and rock excavation.
-        </Text>
-
       </View>
 
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 
@@ -55,19 +57,20 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
-    marginTop: 20,
-    marginLeft: 20,
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10,
   },
 
-  backText: {
+  back: {
     fontSize: 32,
     color: "#1F2790",
   },
 
   image: {
     width: "100%",
-    height: 320,
-    marginTop: 10,
+    height: 340,
   },
 
   content: {
@@ -78,13 +81,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "700",
     color: "#151A2D",
-  },
-
-  description: {
-    marginTop: 14,
-    fontSize: 17,
-    color: "#6B7280",
-    lineHeight: 28,
   },
 
 });

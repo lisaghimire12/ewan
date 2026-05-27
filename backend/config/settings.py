@@ -44,8 +44,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8081",
 ]
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.101.15"]
-#ALLOWED_HOSTS = ["*"]
+#ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.101.15"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -159,3 +159,6 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

@@ -1,6 +1,8 @@
 import random
 
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+
 from django.utils.decorators import method_decorator
 
 from django_ratelimit.decorators import ratelimit
@@ -12,31 +14,33 @@ from rest_framework.views import APIView
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import LoginSerializer
 from .models import LoginOTP
 
 
 @api_view(["POST"])
 def register_user(request):
+
     username = request.data.get("username")
     email = request.data.get("email")
     password = request.data.get("password")
 
     if not username or not email or not password:
-        return Response(
-            {"error": "Username, email, and password are required."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
 
-    if User.objects.filter(username=username).exists():
         return Response(
-            {"error": "Username already exists."},
+            {
+                "success": False,
+                "message": "All fields required."
+            },
             status=status.HTTP_400_BAD_REQUEST
         )
 
     if User.objects.filter(email=email).exists():
+
         return Response(
-            {"error": "Email already exists."},
+            {
+                "success": False,
+                "message": "Email already exists."
+            },
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -48,8 +52,8 @@ def register_user(request):
 
     return Response(
         {
-            "message": "User created successfully.",
-            "username": user.username
+            "success": True,
+            "message": "User registered successfully."
         },
         status=status.HTTP_201_CREATED
     )
@@ -65,46 +69,68 @@ def register_user(request):
     name="dispatch"
 )
 class LoginView(APIView):
+
     permission_classes = []
 
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
 
-        if not serializer.is_valid():
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        try:
+
+            user_obj = User.objects.get(email=email)
+
+        except User.DoesNotExist:
+
             return Response(
                 {
                     "success": False,
-                    "message": "Invalid email/phone or password."
+                    "message": "User not found."
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        user = serializer.validated_data["user"]
+        user = authenticate(
+            username=user_obj.username,
+            password=password
+        )
+
+        if not user:
+
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid password."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         otp = str(random.randint(100000, 999999))
 
-        LoginOTP.objects.filter(user=user, is_used=False).update(is_used=True)
+        LoginOTP.objects.filter(
+            user=user,
+            is_used=False
+        ).update(is_used=True)
 
         LoginOTP.objects.create(
             user=user,
             otp=otp
         )
 
-        print("====================================")
+        print("================================")
         print(f"OTP for {user.email} is {otp}")
-        print("====================================")
+        print("================================")
 
         return Response(
             {
                 "success": True,
-                "message": "Login successful. OTP sent.",
+                "message": "OTP sent.",
                 "user": {
-                    "id": user.id,
                     "username": user.username,
                     "email": user.email,
                 }
-            },
-            status=status.HTTP_200_OK
+            }
         )
 
 
@@ -118,28 +144,24 @@ class LoginView(APIView):
     name="dispatch"
 )
 class VerifyOTPView(APIView):
+
     permission_classes = []
 
     def post(self, request):
+
         email = request.data.get("email")
         otp = request.data.get("otp")
 
-        if not email or not otp:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Email and OTP are required."
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         try:
+
             user = User.objects.get(email=email)
+
         except User.DoesNotExist:
+
             return Response(
                 {
                     "success": False,
-                    "message": "Invalid OTP."
+                    "message": "Invalid user."
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -151,6 +173,7 @@ class VerifyOTPView(APIView):
         ).last()
 
         if not otp_record:
+
             return Response(
                 {
                     "success": False,
@@ -160,13 +183,11 @@ class VerifyOTPView(APIView):
             )
 
         if otp_record.is_expired():
-            otp_record.is_used = True
-            otp_record.save()
 
             return Response(
                 {
                     "success": False,
-                    "message": "OTP expired. Please login again."
+                    "message": "OTP expired."
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -179,16 +200,15 @@ class VerifyOTPView(APIView):
         return Response(
             {
                 "success": True,
-                "message": "OTP verified successfully.",
+
                 "tokens": {
                     "access": str(refresh.access_token),
                     "refresh": str(refresh),
                 },
+
                 "user": {
-                    "id": user.id,
                     "username": user.username,
                     "email": user.email,
                 }
-            },
-            status=status.HTTP_200_OK
+            }
         )

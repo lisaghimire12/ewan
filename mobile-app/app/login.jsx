@@ -15,62 +15,75 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as SecureStore from "expo-secure-store";
+
 import { useRouter } from "expo-router";
+
 import { API_BASE_URL } from "../constants/api";
 
 export default function Login() {
+
   const router = useRouter();
 
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!identifier.trim() || !password.trim()) {
-      Alert.alert("Missing fields", "Please enter email/phone and password.");
+
+    if (!email.trim() || !password.trim()) {
+
+      Alert.alert(
+        "Missing fields",
+        "Please enter email and password."
+      );
+
       return;
     }
 
     try {
+
       setLoading(true);
 
       console.log("1. Login started");
-      console.log("API URL:", `${API_BASE_URL}/api/auth/login/`);
 
-      const response = await fetch(`${API_BASE_URL}/api/auth/login/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: identifier.trim(),
-          password: password,
-        }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/auth/login/`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
 
       console.log("2. Response received");
+
       console.log("STATUS:", response.status);
-      console.log("OK:", response.ok);
 
       const data = await response.json();
 
       console.log("3. DATA:", data);
 
-
       if (response.ok) {
 
-        console.log("4. Login success block entered");
+        console.log("4. Login success");
 
         setPassword("");
-
-        console.log("5. Redirecting to OTP now");
 
         router.push({
           pathname: "/otp",
           params: {
-            phone: identifier,
+            phone: email,
             username: data.user.username,
           },
         });
@@ -78,24 +91,27 @@ export default function Login() {
         return;
       }
 
-      console.log("6. Login failed block entered");
-
       Alert.alert(
         "Login failed",
-        data.message || "Invalid email/phone or password."
+        data.message || "Invalid email or password."
       );
+
     } catch (error) {
-      console.log("7. CATCH ERROR:", error);
+
+      console.log("ERROR:", error);
 
       Alert.alert(
         "Connection error",
-        "Could not connect to the server."
+        "Could not connect to server."
       );
+
     } finally {
-      console.log("8. Finally block");
+
       setLoading(false);
+
     }
   };
+
   const goToOtp = () => {
     router.push("/otp");
   };
@@ -105,26 +121,40 @@ export default function Login() {
   };
 
   const goToForgotPassword = () => {
-    Alert.alert("Coming soon", "Forgot password will be connected next.");
+    Alert.alert(
+      "Coming soon",
+      "Forgot password will be connected later."
+    );
   };
 
   const goToGoogleLogin = () => {
-    Alert.alert("Coming soon", "Google login will be connected later.");
+    Alert.alert(
+      "Coming soon",
+      "Google login will be connected later."
+    );
   };
 
   return (
+
     <SafeAreaView style={styles.safeArea}>
+
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
+
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+
+          {/* HEADER */}
+
           <View style={styles.header}>
+
             <View style={styles.brandRow}>
+
               <Image
                 source={require("../assets/images/logo.png")}
                 style={styles.logo}
@@ -132,36 +162,58 @@ export default function Login() {
               />
 
               <View style={styles.brandTextBox}>
-                <Text style={styles.brandTitle}>Ewan Engineering</Text>
+
+                <Text style={styles.brandTitle}>
+                  Ewan Engineering
+                </Text>
+
                 <Text style={styles.brandSubtitle}>
                   And Construction Pvt. Ltd.
                 </Text>
+
               </View>
+
             </View>
 
-            <Text style={styles.welcome}>Welcome back!!</Text>
-            <Text style={styles.signInSubText}>Sign in to your account</Text>
+            <Text style={styles.welcome}>
+              Welcome back!!
+            </Text>
+
+            <Text style={styles.signInSubText}>
+              Sign in to your account
+            </Text>
+
           </View>
 
+          {/* FORM */}
+
           <View style={styles.formSection}>
-            <Text style={styles.label}>EMAIL / PHONE</Text>
+
+            <Text style={styles.label}>
+              EMAIL
+            </Text>
 
             <View style={styles.inputBox}>
+
               <TextInput
                 style={styles.input}
-                value={identifier}
-                onChangeText={setIdentifier}
-                placeholder="Enter email or phone"
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Enter email"
                 placeholderTextColor="#9AA3B8"
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="email-address"
               />
+
             </View>
 
-            <Text style={styles.label}>PASSWORD</Text>
+            <Text style={styles.label}>
+              PASSWORD
+            </Text>
 
             <View style={[styles.inputBox, styles.activeInput]}>
+
               <TextInput
                 style={styles.input}
                 value={password}
@@ -175,76 +227,123 @@ export default function Login() {
 
               <TouchableOpacity
                 onPress={() => setShowPassword(!showPassword)}
-                hitSlop={10}
               >
+
                 <Text style={styles.eyeText}>
                   {showPassword ? "Hide" : "Show"}
                 </Text>
+
               </TouchableOpacity>
+
             </View>
 
             <TouchableOpacity
               style={styles.forgotButton}
               onPress={goToForgotPassword}
             >
-              <Text style={styles.forgotText}>Forgot password?</Text>
+
+              <Text style={styles.forgotText}>
+                Forgot password?
+              </Text>
+
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.loginButton, loading && styles.disabledButton]}
+              style={[
+                styles.loginButton,
+                loading && styles.disabledButton
+              ]}
               onPress={handleLogin}
               disabled={loading}
-              activeOpacity={0.85}
             >
+
               {loading ? (
+
                 <ActivityIndicator color="#FFFFFF" />
+
               ) : (
-                <Text style={styles.loginButtonText}>Sign In Securely</Text>
+
+                <Text style={styles.loginButtonText}>
+                  Sign In Securely
+                </Text>
+
               )}
+
             </TouchableOpacity>
 
+            {/* DIVIDER */}
+
             <View style={styles.dividerRow}>
+
               <View style={styles.divider} />
-              <Text style={styles.dividerText}>or continue with</Text>
+
+              <Text style={styles.dividerText}>
+                or continue with
+              </Text>
+
               <View style={styles.divider} />
+
             </View>
 
+            {/* SOCIAL */}
+
             <View style={styles.socialRow}>
+
               <TouchableOpacity
                 style={styles.socialButton}
                 onPress={goToGoogleLogin}
-                activeOpacity={0.8}
               >
-                <Text style={styles.socialText}>🇬 Google</Text>
+
+                <Text style={styles.socialText}>
+                  🇬 Google
+                </Text>
+
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.socialButton}
                 onPress={goToOtp}
-                activeOpacity={0.8}
               >
-                <Text style={styles.socialText}>📱 Phone OTP</Text>
+
+                <Text style={styles.socialText}>
+                  📱 Phone OTP
+                </Text>
+
               </TouchableOpacity>
+
             </View>
+
+            {/* REGISTER */}
 
             <TouchableOpacity
               style={styles.registerButton}
               onPress={goToRegister}
-              activeOpacity={0.8}
             >
+
               <Text style={styles.registerText}>
+
                 Don't have an account?{" "}
-                <Text style={styles.registerLink}>Register →</Text>
+
+                <Text style={styles.registerLink}>
+                  Register →
+                </Text>
+
               </Text>
+
             </TouchableOpacity>
+
           </View>
+
         </ScrollView>
+
       </KeyboardAvoidingView>
+
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+
   safeArea: {
     flex: 1,
     backgroundColor: "#1C2187",
@@ -287,7 +386,6 @@ const styles = StyleSheet.create({
   brandTitle: {
     color: "#FFFFFF",
     fontSize: 24,
-    fontFamily: "Times New Roman",
     fontWeight: "700",
   },
 
@@ -300,7 +398,6 @@ const styles = StyleSheet.create({
   welcome: {
     color: "#FFFFFF",
     fontSize: 32,
-    fontFamily: "Times New Roman",
     fontWeight: "700",
   },
 
@@ -374,7 +471,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#195CCB",
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
     shadowOpacity: 0.28,
     shadowRadius: 14,
     elevation: 8,
@@ -443,4 +543,5 @@ const styles = StyleSheet.create({
     color: "#159CE8",
     fontWeight: "700",
   },
+
 });
